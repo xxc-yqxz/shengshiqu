@@ -1,0 +1,10 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+/* 此处不能使用li:last-child */
+.layui-nav li:nth-child(3){
+    float: right;
+    margin: 0 10px;
+}

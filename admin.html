@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="layui-v2.6.4/layui/css/layui.css">
+    <link rel="stylesheet" href="public/admin/css/admin.css">
+</head>
+
+<body>
+    <nav>
+        <ul class="layui-nav layui-bg-blue" lay-filter="">
+            <li class="layui-nav-item layui-this"><a href="">信息查询</a></li>
+            <li class="layui-nav-item"><a href="">成绩查询</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <class="layui-nav-img">XXC
+                </a>
+                <dl class="layui-nav-child">
+                    <!-- 二级菜单 -->
+                    <dd><a href="">更改密码</a></dd>
+                    <dd><a href="">退出登录</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </nav>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <iframe name="fm" src="/home/dashboard.html" frameborder="0"></iframe>
+    </div>
+
+    <section>
+        <table id="demo" lay-filter="test"></table>
+    </section>
+
+    <script src="layui-v2.6.4/layui/layui.js"></script>
+    <script>
+        //注意：导航 依赖 element 模块，否则无法进行功能性操作
+        layui.use('element', function () {
+            var element = layui.element;
+
+            //…
+        });
+        var table = layui.table;
+
+        layui.use('table', function () {
+            var table = layui.table;
+
+            //第一个实例
+            table.render({
+                elem: '#demo'
+                , height: 312
+                , url: '/demo/table/user/' //数据接口
+                , page: false //开启分页
+                , cols: [[ //表头
+                    { field: 'stuId', title: '学号', width: 80, sort: true, fixed: 'left' }
+                    , { field: 'claId', title: '课号', width: 80 }
+                    , { field: 'claName', title: '课名', width: 80, sort: true }
+                    , { field: 'score', title: '成绩', width: 80 }
+                    , { field: 'teacherName', title: '教师名', width: 177 }
+                ]]
+            });
+
+        });
+    </script>
+</body>
+
+</html>
