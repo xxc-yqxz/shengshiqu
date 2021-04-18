@@ -1,47 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title></title>
+    <script src="public/index/js/jquery.js"></script>
     <style>
-        .main {
-            width: 300px;
-            height: 300px;
-            border: 1px solid #000;
-        }
-
-        .first {
-            float: left;
+        select {
             width: 100px;
-            height: 100px;
-            background-color: blueviolet;
-        }
-
-        .two {
-            float: left;
-            width: 100px;
-            height: 100px;
-            background-color: yellow;
-        }
-
-        .three {
-            float: right;
-            width: 100px;
-            height: 100px;
-            background-color: yellow;
         }
     </style>
 </head>
 
 <body>
-    <div class="main">
-        <div class="first"></div>
-        <div class="two"></div>
-        <div class="three"></div>
-    </div>
+    省：
+    <select name="" id="sheng">
+        <option value="">请选择</option>
+    </select>
+    市：
+    <select name="" id="shi" disabled="disabled">
+        <option value="">请选择</option>
+    </select>
+    区：
+    <select name="" id="qu" disabled="disabled">
+        <option value="">请选择</option>
+    </select>
+    <script type="text/javascript">
+        //省
+        $.getJSON("/public/index/address.json", function (date) {
+            var options = []
+            date.forEach(function (items) {
+                var pOption = "<option value='" + items.name + "'>" + items.name + "</option>";
+                options.push(pOption);
+            });
+            $('#sheng').click(function () {
+                $("#sheng").html('')
+                $("#sheng").append(options)
+            })
+        });
 
+        // 市
+        $("#sheng").change(function () {
+            $("#shi").attr("disabled", false);
+            $('#shi').html('<option value="">请选择</option>')
+            $('#qu').html('<option value="">请选择</option>')
+            $.getJSON("/public/index/address.json", function (date) {
+                var pId = $("#sheng").val();
+                date.forEach(function (item) {
+                    if (item.name == pId) {
+                        item.city.forEach(function (item) {
+                            var sOption = "<option value='" + item.name + "'>" + item.name + "</option>";
+                            $("#shi").append(sOption)
+                        })
+                    }
+                });
+            });
+        });
+        // 区
+        $("#shi").change(function () {
+            $("#qu").attr("disabled", false);
+            $.getJSON("/public/index/address.json", function (data) {
+                var pId = $('#sheng').val();
+                var pId2 = $("#shi").val();
+
+                data.forEach(function (item) {
+                    if (item.name === pId) {
+
+                        item.city.forEach(function (item) {
+                            if (item.name == pId2) {
+                                item.area.forEach(function (item) {
+                                    var sOption = "<option value='" + item + "'>" + item + "</option>";
+                                    console.log(sOption);
+
+                                    $("#qu").append(sOption);
+                                })
+                            }
+                        })
+                    }
+                });
+            });
+        });
+
+    </script>
 </body>
 
 </html>

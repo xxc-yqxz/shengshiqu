@@ -28,6 +28,7 @@
     </nav>
 
     <section class="layui-main">
+
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6">
                 <div class="layui-panel">
@@ -80,16 +81,221 @@
                 </div>
             </div>
         </div>
+
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" id="add">添加用户</button>
     </section>
 
     <script src="/assets/layui-v2.6.4/layui/layui.js"></script>
+    <script src="/public/index/js/jquery.js"></script>
     <script>
+
+        var addressData = $.getJSON("/public/index/address.json");
+        console.log(addressData);
+
         //注意：导航 依赖 element 模块，否则无法进行功能性操作
         layui.use('element', function () {
             var element = layui.element;
 
             //…
         });
+
+
+
+        layui.use('form', function () {
+            var form = layui.form;
+            // form.render();
+            $(document).on('click', '#add', function () {
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        title: '添加用户',
+                        type: 1,
+                        content: `           
+                    <!-- 对学生基本信息包括：学号、姓名、出生年月、籍贯、性别、专业、班级、家庭住址、个人联系电话、家庭 -->
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学号：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入标题"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" required lay-verify="required" placeholder="请输入姓名"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">出生年月</label>
+                    <div class="layui-input-inline">
+                        <input type="date" name="date" required lay-verify="required" placeholder="请选择出生日期"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">籍贯：</label>
+                    <div class="layui-input-inline">
+                    <input type="text" name="jiguan" required lay-verify="required" placeholder="请输入籍贯"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">性别：</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sex" value="男" title="男">
+                        <input type="radio" name="sex" value="女" title="女" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">专业：</label>
+                    <div class="layui-input-block">
+                        <select name="city" lay-verify="">
+                        <option value="">请选择一个专业：</option>
+                        <option value="010">软件工程</option>
+                        <option value="021">物联网</option>
+                        <option value="0571">网络工程</option>
+                        <option value="0571">大数据</option>
+                        <option value="0571">计算机科学与技术</option>
+                        </select>     
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">班级:</label>
+                    <div class="layui-input-inline">
+                        <select name="city" lay-verify="">
+                        <option value="">请选择班级：</option>
+                        <option value="010">1班</option>
+                        <option value="021">2班</option>
+                        </select>     
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">班级:</label>
+                    <div class="layui-input-inline">
+                        <div class="layui-col-md4">
+                            <div class="layui-col-md2">
+                                省：
+                            </div>
+                            <div class="layui-col-md9">
+                                <select name="" id="sheng" class="layui-layui-input-inline">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-col-md2">
+                                市：
+                            </div>
+                            <div class="layui-col-md9">
+                                <select name="" id="shi" disabled="disabled">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-col-md2">
+                                区：
+                            </div>
+                            <div class="layui-col-md9">
+                                <select name="" id="qu" disabled="disabled">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">立即添加</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        `,
+                        anim: 0,
+                        area: ['1000px', '700px'],
+                        success: function (layero, index) { // 成功弹出后回调
+                            getAddress(layero);
+                            form.render(); // 刷新checkbox开关渲染(否则开关按钮会不显示)
+                        },
+                    });
+                });
+            })
+        });
+
+
+        function getAddress(p) {
+            let sheng = p.find('#sheng');
+            let shi = p.find('#shi');
+            let qu = p.find('#qu');
+
+            console.log(sheng.html());
+
+
+
+            //省
+            var options = []
+            addressData.responseJSON.forEach(function (items) {
+                var pOption = "<option value='" + items.name + "'>" + items.name + "</option>";
+                options.push(pOption);
+            });
+
+            sheng.html('')
+            sheng.append(options)
+        };
+        // 市
+        sheng.change(function () {
+            shi.attr("disabled", false);
+            shi.html('<option value="">请选择</option>')
+            qu.html('<option value="">请选择</option>')
+            var pId = sheng.val();
+            addressData.responseJSON.forEach(function (item) {
+                if (item.name == pId) {
+                    item.city.forEach(function (item) {
+                        var sOption = "<option value='" + item.name + "'>" + item.name + "</option>";
+                        shi.append(sOption)
+                    })
+                }
+            });
+        });
+        // 区
+        shi.change(function () {
+            qu.attr("disabled", false);
+            $.getJSON("/public/index/address.json", function (data) {
+                var pId = sheng.val();
+                var pId2 = shi.val();
+
+                data.forEach(function (item) {
+                    if (item.name === pId) {
+
+                        item.city.forEach(function (item) {
+                            if (item.name == pId2) {
+                                item.area.forEach(function (item) {
+                                    var sOption = "<option value='" + item + "'>" + item + "</option>";
+                                    console.log(sOption);
+
+                                    qu.append(sOption);
+                                })
+                            }
+                        })
+                    }
+                });
+            });
+        });
+        console.log(sheng.html());
+
+
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+
+        })
+
+
+
     </script>
 </body>
 
