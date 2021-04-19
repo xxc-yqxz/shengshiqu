@@ -1,0 +1,84 @@
+<script>
+    layui.use(['form', 'jquery', 'layer'], function () {
+        var form = layui.form;
+        var $ = layui.$;
+        var layer = layui.layer;
+        //可局部刷新的元素 select,radio,checkbox
+        form.render();          //刷新全部
+        form.render('select');  //刷新select选择框
+        form.render('select', 'selectfilter');//刷新layfilter为selectfilter1的select
+
+        //**********************************预设元素属性
+        lay - skin   //只对checkbox有效 ，可选switch,primary
+        lay - filter //事件过滤器，用于匹配事件的准确性。不仅仅用于form
+        lay - verify //规则验证
+        lay - verType //不符合规则时显示风格，可选tips，alert,msg(默认)
+        lay - submit  //绑定触发提交的元素
+
+        //*************************************事件监控
+        //监听的元素有select(选中) ，checkbox（勾选）,swich(开关),radio(选择),submit(提交)
+        form.on('select(selectfilter)', function (data) {
+            console.log(data.elem);    //原生Dom
+            console.log(data.value);   //选中的option的value
+            console.log(data.othis);   //美化后Dom
+        })
+
+        form.on('radio', function (data) {
+            console.log(data.elem);    //原生Dom
+            console.log(data.value);   //选中的radio的value
+            console.log(data.othis);   //美化后Dom
+        })
+
+        //checkbox和switch是一样的
+        form.on('checkbox', function (data) {
+            console.log(data.elem);           //原生Dom
+            console.log(data.elem.checked);   //点击后的状态true,false                console.log(data.othis);          //美化后的Dom
+        })
+
+        //submit
+        form.on('submit(gofilter)', function (data) {
+            console.log(data.field)
+            $.post('/Home/AddUserInfo', data.field, function (result) {
+                if (result.IsSuccess === 1) {
+                    alert(result.Msg);
+                } else {
+                    alert(result.Msg);
+                }
+            })
+            return false;//这里是拦截layui自带的提交
+        })
+
+        //*********************************表单验证
+        //required（必填项）phone（手机号）email（邮箱）url（网址）number（数字）date（日期）identity（身份证）
+        //也可以自定义，一个简单用户名密码的栗子：
+        form.verify({
+            validateUserName: [
+                /^[\S]{2,10}$/
+                , '用户名必须2到10位'
+            ],
+            validateUserPass: [
+                /^[\S]{3,20}$/
+                , '密码必须为3到20位'
+            ],
+            validateConfPass: function (value) {
+                var pass = $('#userPass').val();
+                if (value != pass) {
+                    return '两次密码不一致';
+                }
+            },
+        });
+
+        //**********************************赋初值，当我们修改或者展示详情时可用
+        form.val("formfilter", {
+            "Name": "haha" // "name": "value"
+            , "Gender": 0        //对应radio的value值，
+            , "Role": 3          //对应select下option的value值
+            , "LikeRead": true   //对应checkbox
+            , "Descirpt": "这里是用户描述哦"  //放在textarea中
+        })
+        console.log($('#Descirpt').val() + "xxx")  //获取textarea值的方式
+    });
+</script>
+</body>
+
+</html>

@@ -179,7 +179,7 @@
                                 省：
                             </div>
                             <div class="layui-col-md9">
-                                <select name="" id="sheng" class="layui-layui-input-inline">
+                                <select name="" id="sheng" class="layui-layui-input-inline" lay-filter="selectfilter1">
                                     <option value="">请选择</option>
                                 </select>
                             </div>
@@ -189,17 +189,17 @@
                                 市：
                             </div>
                             <div class="layui-col-md9">
-                                <select name="" id="shi" disabled="disabled">
+                                <select name="" id="shi" disabled="disabled" lay-filter="selectfilter2">
                                     <option value="">请选择</option>
                                 </select>
                             </div>
                         </div>
                         <div class="layui-col-md4">
-                            <div class="layui-col-md2">
-                                区：
+                            <div class="layui-col-md3">
+                                区/县：
                             </div>
                             <div class="layui-col-md9">
-                                <select name="" id="qu" disabled="disabled">
+                                <select name="" id="qu" disabled="disabled" lay-filter="selectfilter3">
                                     <option value="">请选择</option>
                                 </select>
                             </div>
@@ -217,8 +217,10 @@
                         anim: 0,
                         area: ['1000px', '700px'],
                         success: function (layero, index) { // 成功弹出后回调
-                            getAddress(layero);
+                            getAddress(layero, form);
                             form.render(); // 刷新checkbox开关渲染(否则开关按钮会不显示)
+                            // console.log(layero);
+
                         },
                     });
                 });
@@ -226,55 +228,60 @@
         });
 
 
-        function getAddress(p) {
+        function getAddress(p, form) {
             let sheng = p.find('#sheng');
             let shi = p.find('#shi');
             let qu = p.find('#qu');
-
-            console.log(sheng.html());
-
-
 
             //省
             var options = []
             addressData.responseJSON.forEach(function (items) {
                 var pOption = "<option value='" + items.name + "'>" + items.name + "</option>";
                 options.push(pOption);
+                // console.log(sheng.html());
             });
+            sheng.append(options);
 
-            sheng.html('')
-            sheng.append(options)
-        };
-        // 市
-        sheng.change(function () {
-            shi.attr("disabled", false);
-            shi.html('<option value="">请选择</option>')
-            qu.html('<option value="">请选择</option>')
-            var pId = sheng.val();
-            addressData.responseJSON.forEach(function (item) {
-                if (item.name == pId) {
-                    item.city.forEach(function (item) {
-                        var sOption = "<option value='" + item.name + "'>" + item.name + "</option>";
-                        shi.append(sOption)
-                    })
-                }
-            });
-        });
-        // 区
-        shi.change(function () {
-            qu.attr("disabled", false);
-            $.getJSON("/public/index/address.json", function (data) {
+            form.on('select(selectfilter1)', function (data) {
+                console.log(sheng.val());
+
+                console.log(shi[0].disabled);
+                shi[0].disabled = false;
+                console.log(shi[0].disabled);
+
+                shi.html('<option value="">请选择</option>')
+                qu.html('<option value="">请选择</option>')
+                var pId = sheng.val();
+
+                addressData.responseJSON.forEach(function (item) {
+                    if (item.name === pId) {
+                        console.log(item.city);
+
+                        item.city.forEach(function (item) {
+                            var sOption = "<option value='" + item.name + "'>" + item.name + "</option>";
+                            shi.append(sOption);
+                        })
+                    }
+                    form.render('select');
+
+                });
+            })
+
+
+
+            // 区
+            form.on('select(selectfilter2)', function (data) {
+                qu[0].disabled = false;
                 var pId = sheng.val();
                 var pId2 = shi.val();
 
-                data.forEach(function (item) {
+                addressData.responseJSON.forEach(function (item) {
                     if (item.name === pId) {
 
                         item.city.forEach(function (item) {
                             if (item.name == pId2) {
                                 item.area.forEach(function (item) {
                                     var sOption = "<option value='" + item + "'>" + item + "</option>";
-                                    console.log(sOption);
 
                                     qu.append(sOption);
                                 })
@@ -282,9 +289,10 @@
                         })
                     }
                 });
-            });
-        });
-        console.log(sheng.html());
+                form.render('select');
+            })
+
+        }
 
 
 
